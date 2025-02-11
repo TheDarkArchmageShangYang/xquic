@@ -221,7 +221,7 @@ xqc_log_implement(xqc_log_t *log, xqc_log_type_t type, const char *func, const c
     }
 
     /* XQC_LOG_STATS & XQC_LOG_REPORT are levels for statistic */
-    if ((level == XQC_LOG_STATS || level == XQC_LOG_REPORT)
+    if ((level == XQC_LOG_STATS || level == XQC_LOG_REPORT || level == XQC_LOG_INFO)
         && log->log_callbacks->xqc_log_write_stat)
     {
         log->log_callbacks->xqc_log_write_stat(level, buf, p - buf, log->user_data);

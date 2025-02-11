@@ -17,6 +17,6 @@ typedef struct {
     xqc_send_ctl_t *ctl_ctx;
 } xqc_new_reno_t;
 
-extern const xqc_cong_ctrl_callback_t xqc_reno_cb;
+extern xqc_cong_ctrl_callback_t xqc_reno_cb;
 
 #endif /* _XQC_NEW_RENO_H_INCLUDED_ */

@@ -14,7 +14,7 @@ endif()
 
 # SSL lib type, xquic support babassl and boringssl interfaces
 if(NOT SSL_TYPE)
-    set(SSL_TYPE "babassl")
+    set(SSL_TYPE "boringssl")
 endif()
 
 if(${SSL_TYPE} MATCHES "babassl")
@@ -53,17 +53,31 @@ elseif(${SSL_TYPE} MATCHES "boringssl")
     endif()
 endif()
 
-# ssl include path
+# libxml2 lib dependency
+set(XML_PATH ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libxml2)
+
+set(XML_LIB_PATH ${XML_PATH}/lib/libxml2.a)
+
+
+
+## ssl include path
 if(NOT SSL_INC_PATH)
     set(SSL_INC_PATH
         ${SSL_PATH}/include
     )
 endif()
 
+# libxml2 include path
+set(XML_INC_PATH ${XML_PATH}/include/libxml2)
+
 MESSAGE("SSL_TYPE= ${SSL_TYPE}")
 MESSAGE("SSL_PATH= ${SSL_PATH}")
 MESSAGE("SSL_LIB_PATH= ${SSL_LIB_PATH}")
 MESSAGE("SSL_INC_PATH= ${SSL_INC_PATH}")
+
+MESSAGE("XML_PATH= ${XML_PATH}")
+MESSAGE("XML_LIB_PATH= ${XML_LIB_PATH}")
+MESSAGE("XML_INC_PATH= ${XML_INC_PATH}")
 
 # print tls traffic secret in keylog
 if(XQC_PRINT_SECRET)
@@ -79,18 +93,18 @@ endif()
 if(XQC_ONLY_ERROR_LOG)
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -DXQC_ONLY_ERROR_LOG ")
 endif()
-
-# enable event log
+#
+## enable event log
 if(XQC_ENABLE_EVENT_LOG)
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -DXQC_ENABLE_EVENT_LOG ")
 endif()
-
-# sendmmsg
+#
+## sendmmsg
 if(XQC_SUPPORT_SENDMMSG_BUILD)
     add_definitions(-DXQC_SUPPORT_SENDMMSG)
 endif()
-
-#coverity
+#
+##coverity
 if(GCOV STREQUAL "on")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
@@ -107,14 +121,14 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
 else()
     add_definitions(-DXQC_SYS_WINDOWS=1)
 endif()
-
-# additional C_FLAGS on mac
+#
+## additional C_FLAGS on mac
 if(PLATFORM STREQUAL "mac32")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
 endif()
-
-
-# configure file
+#
+#
+## configure file
 configure_file (
     xqc_configure.h.in
     xqc_configure.h
@@ -156,6 +170,11 @@ set(
 set(
     TRANSPORT_SOURCES
     "src/transport/xqc_engine.c"
+    "src/transport/xqc_extra_sample.c"
+    "src/transport/xqc_CCA_info_container.c"
+    "src/transport/xqc_ip_CCA_info.c"
+    "src/transport/xqc_stream_CCA_info.c"
+    "src/transport/xqc_switch.c"
     "src/transport/xqc_conn.c"
     "src/transport/xqc_client.c"
     "src/transport/xqc_cid.c"
@@ -185,6 +204,8 @@ set(
     "src/transport/scheduler/xqc_scheduler_common.c"
     "src/transport/scheduler/xqc_scheduler_backup.c"
     "src/transport/scheduler/xqc_scheduler_rap.c"
+    # added by qnwang for AR
+    "src/transport/xqc_active_retrans.c"
 )
 
 # TLS source
@@ -221,6 +242,7 @@ set(
     "src/common/xqc_random.c"
     "src/common/xqc_str.c"
     "src/common/xqc_log.c"
+    "src/common/xqc_extra_log.c"
     "src/common/xqc_log_event_callback.c"
     "src/common/xqc_time.c"
     "src/common/utils/huffman/xqc_huffman_code.c"
@@ -303,6 +325,7 @@ else()
         xquic
         "-ldl -Wl,--whole-archive -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/scripts/xquic.lds"
         ${SSL_LIB_PATH}
+            "-L/home/qnwang/worknew/AR/xquic/third_party/libxml2/lib -lxml2 -lz -lm"
         "-Wl,--no-whole-archive"
         -lpthread
     )
@@ -318,6 +341,7 @@ endif()
 
 
 include_directories(${SSL_INC_PATH})
+include_directories(${XML_INC_PATH})
 include_directories(${CMAKE_SOURCE_DIR}/)
 
 

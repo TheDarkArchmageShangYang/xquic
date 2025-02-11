@@ -51,7 +51,7 @@ typedef struct xqc_po_stream_frame_s {
     uint64_t                ps_offset;
     unsigned int            ps_length;
     unsigned int            ps_type_offset;
-    unsigned int            ps_length_offset;
+    unsigned int            ps_length_offset; // 长度字段的偏移量
     unsigned char           ps_is_used;
     unsigned char           ps_has_fin;     /* whether fin flag from stream frame is set  */
     unsigned char           ps_is_reset;    /* whether frame is RESET_STREAM */

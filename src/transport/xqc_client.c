@@ -45,15 +45,24 @@ xqc_client_connect(xqc_engine_t *engine, const xqc_conn_settings_t *conn_setting
         return NULL;
     }
 
+/**
+     * Congestion switching added by jndu
+     */
+    xqc_ip_CCA_info_t **mp_map = xqc_ip_get_mp_map(engine, peer_addr, peer_addrlen);
+    if (mp_map == NULL) {
+        xqc_log(engine->log, XQC_LOG_ERROR, "|create mp_map fail|");
+        return NULL;
+    }
+
     xqc_connection_t *xc = xqc_client_create_connection(engine, dcid, scid, conn_settings,
                                                         server_host, no_crypto_flag,
-                                                        conn_ssl_config, alpn, user_data);
+                                                        conn_ssl_config, alpn, user_data, mp_map);
     if (xc == NULL) {
         xqc_log(engine->log, XQC_LOG_ERROR,
                 "|create connection error|");
         return NULL;
     }
-
+    
     if (token && token_len > 0) {
         xc->conn_token_len = token_len;
         memcpy(xc->conn_token, token, token_len);
@@ -67,6 +76,8 @@ xqc_client_connect(xqc_engine_t *engine, const xqc_conn_settings_t *conn_setting
     if (xqc_conn_client_init_path_addr(xc) != XQC_OK) {
         return NULL;
     }
+
+    
 
     xqc_log(engine->log, XQC_LOG_DEBUG, "|xqc_connect|");
     xqc_log_event(xc->log, CON_CONNECTION_STARTED, xc, XQC_LOG_REMOTE_EVENT);
@@ -216,14 +227,14 @@ end:
 xqc_connection_t *
 xqc_client_create_connection(xqc_engine_t *engine, xqc_cid_t dcid, xqc_cid_t scid,
     const xqc_conn_settings_t *settings, const char *server_host, int no_crypto_flag,
-    const xqc_conn_ssl_config_t *conn_ssl_config, const char *alpn, void *user_data)
+    const xqc_conn_ssl_config_t *conn_ssl_config, const char *alpn, void *user_data, xqc_ip_CCA_info_t **mp_map)
 {
     xqc_int_t               ret;
     xqc_transport_params_t  tp;
     xqc_trans_settings_t   *local_settings;
 
     xqc_connection_t *xc = xqc_conn_create(engine, &dcid, &scid, settings, user_data,
-                                           XQC_CONN_TYPE_CLIENT);
+                                           XQC_CONN_TYPE_CLIENT, mp_map);
     if (xc == NULL) {
         return NULL;
     }

@@ -8,6 +8,7 @@
 #include <xquic/xquic.h>
 #include "src/common/xqc_config.h"
 #include "src/common/xqc_time.h"
+#include "src/common/xqc_extra_log.h"
 #include "src/congestion_control/xqc_copa.h"
 #include "src/transport/xqc_send_ctl.h"
 
@@ -541,7 +542,33 @@ xqc_copa_get_pacing_rate(void *cong)
     return copa->pacing_rate;
 }
 
-const xqc_cong_ctrl_callback_t xqc_copa_cb = {
+static void
+xqc_copa_set_pacing_rate_CS(void *cong, uint32_t pacing_rate)
+{
+    xqc_copa_t *copa = (xqc_copa_t*)cong;
+    copa->pacing_rate = pacing_rate;
+}
+
+static void
+xqc_copa_set_cwnd_CS(void *cong, uint64_t cwnd)
+{
+    xqc_copa_t *copa = (xqc_copa_t*)cong;
+    copa->cwnd_bytes = cwnd;
+}
+
+static void
+xqc_copa_print_status(void *cong, xqc_sample_t *sampler)
+{
+    xqc_copa_t *copa = (xqc_copa_t*)cong;
+    xqc_send_ctl_t *send_ctl = sampler->send_ctl;
+    xqc_connection_t *conn = send_ctl->ctl_conn;
+
+    const char *direction[] = {"COPA_UNDEFINE", "COPA_UP", "COPA_DOWN"};
+    xqc_extra_log(conn->log, conn->CS_extra_log, "[CCA:COPA] [direction:%s] [in_slow_start:%s]",
+                    direction[copa->curr_dir], copa->in_slow_start ? "yes" : "no" );
+}
+
+xqc_cong_ctrl_callback_t xqc_copa_cb = {
     .xqc_cong_ctl_size                 = xqc_copa_size,
     .xqc_cong_ctl_init                 = xqc_copa_init,
     .xqc_cong_ctl_on_lost              = xqc_copa_on_lost,
@@ -553,4 +580,7 @@ const xqc_cong_ctrl_callback_t xqc_copa_cb = {
     .xqc_cong_ctl_restart_from_idle    = xqc_copa_restart_from_idle,
     .xqc_cong_ctl_in_recovery          = xqc_copa_in_recovery,
     .xqc_cong_ctl_get_pacing_rate      = xqc_copa_get_pacing_rate,
+    .xqc_cong_ctl_set_cwnd             = xqc_copa_set_cwnd_CS,
+    .xqc_cong_ctl_set_pacing_rate      = xqc_copa_set_pacing_rate_CS,
+    .xqc_cong_ctl_print_status         = xqc_copa_print_status
 };

@@ -114,6 +114,12 @@ XQUIC_VERS_1.0 {
         xqc_conn_get_conn_settings_template;
         xqc_conn_get_lastest_rtt;
         xqc_log_enable;
+        xqc_CCA_info_container_add;
+        xqc_CCA_info_container_free_value;
+        xqc_CCA_info_container_delete;
+        xqc_CCA_info_container_get;
+        xqc_CCA_info_container_find;
+        xqc_get_CCA_info_sample;
     local:
         *;
 };

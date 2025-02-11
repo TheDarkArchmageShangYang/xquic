@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "src/common/xqc_str.h"
+#include "src/common/xqc_malloc.h"
 
 typedef struct xqc_str_hash_element_s {
     uint64_t    hash;
@@ -80,12 +81,12 @@ xqc_str_hash_add(xqc_str_hash_table_t *hash_tab, xqc_str_hash_element_t e)
     }
 
     node->element = e;
-    node->element.str.data = a->malloc(a->opaque, e.str.len);
+    node->element.str.data = a->malloc(a->opaque, e.str.len + 1);
     if (node->element.str.data == NULL) {
         a->free(a->opaque, node);
         return XQC_ERROR;
     }
-    xqc_memcpy(node->element.str.data, e.str.data, e.str.len);
+    xqc_memcpy(node->element.str.data, e.str.data, e.str.len + 1);
     node->element.str.len = e.str.len;
     
     node->next = hash_tab->list[index];
@@ -114,6 +115,23 @@ xqc_str_hash_delete(xqc_str_hash_table_t *hash_tab, uint64_t hash, xqc_str_t str
     }
 
     return XQC_ERROR;
+}
+
+static inline void*
+xqc_str_hash_get(xqc_str_hash_table_t *hash_tab, char *str, size_t *len)
+{
+    size_t cnt = hash_tab->count;
+    xqc_str_hash_node_t **list = hash_tab->list;
+    for (size_t i = 0; i < cnt; i++)
+    {
+        xqc_str_hash_node_t *node = list[i];
+        if (node) {
+            xqc_memcpy(str, node->element.str.data, node->element.str.len + 1);
+            *len = node->element.str.len;
+            return node->element.value;
+        }
+    }
+    return NULL;
 }
 
 #endif /*_XQC_STR_HASH_INCLUDED_*/

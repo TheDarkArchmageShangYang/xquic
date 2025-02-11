@@ -14,6 +14,11 @@
 #include "src/transport/xqc_multipath.h"
 #include <math.h>
 
+// added by jndu
+#include "src/transport/xqc_stream_CCA_info.h"
+#include "src/transport/xqc_extra_sample.h"
+#include "src/transport/xqc_switch.h"
+
 #define XQC_kPacketThreshold                3
 #define XQC_kTimeThresholdShift             3
 #define XQC_kPersistentCongestionThreshold  3
@@ -132,7 +137,7 @@ typedef struct xqc_send_ctl_s {
     uint64_t                    ctl_bytes_send;
     uint64_t                    ctl_bytes_recv;
 
-    const
+//    const
     xqc_cong_ctrl_callback_t    *ctl_cong_callback;
     void                        *ctl_cong;
 
@@ -167,6 +172,19 @@ typedef struct xqc_send_ctl_s {
     uint32_t                    ctl_last_acked_pkn_number_cfz;
     float                       ctl_lossrate_cfz;
     // end add by cfz
+    
+    /* for calculate power jndu*/
+    xqc_stream_CCA_info_t       CCA_sampler;
+    float                       ctl_throughput;
+    float                       ctl_max_throughput;
+    float                       ctl_loss_rate;
+    xqc_calc_loss_list_node_t   *loss_list;
+    /* for CCA switching jndu*/
+    xqc_switch_ctx_t           *ctl_switch_ctx;
+    xqc_get_CCA_info_metric_cb  ctl_metric_cb;
+    void                       *ctl_cong_stack[XQC_CCA_NUM];
+    /* for CCA container jndu*/
+    int                         mp_index;
 } xqc_send_ctl_t;
 
 

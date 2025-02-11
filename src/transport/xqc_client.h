@@ -26,7 +26,8 @@ xqc_connection_t *xqc_client_create_connection(xqc_engine_t *engine,
     int no_crypto_flag,
     const xqc_conn_ssl_config_t *conn_ssl_config,
     const char *alpn,
-    void *user_data);
+    void *user_data,
+    xqc_ip_CCA_info_t **mp_map);
 
 #endif /* _XQC_CLIENT_H_INCLUDED_ */
 

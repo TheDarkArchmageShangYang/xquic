@@ -7,6 +7,7 @@
 
 #include <xquic/xquic_typedef.h>
 #include "src/common/xqc_priority_q.h"
+#include "src/transport/xqc_ip_CCA_info.h"
 
 typedef struct xqc_conns_pq_elem_s {
     xqc_pq_key_t        time_ms;

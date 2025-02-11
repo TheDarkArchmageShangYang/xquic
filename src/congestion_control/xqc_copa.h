@@ -66,6 +66,6 @@ typedef struct xqc_copa_s {
     xqc_send_ctl_t      *ctl_ctx;
 } xqc_copa_t;
 
-extern const xqc_cong_ctrl_callback_t xqc_copa_cb;
+extern xqc_cong_ctrl_callback_t xqc_copa_cb;
 
 #endif

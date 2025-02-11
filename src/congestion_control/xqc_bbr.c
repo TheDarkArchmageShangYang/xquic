@@ -9,6 +9,7 @@
 #include "src/congestion_control/xqc_sample.h"
 #include "src/common/xqc_time.h"
 #include "src/common/xqc_config.h"
+#include "src/common/xqc_extra_log.h"
 #include "src/transport/xqc_send_ctl.h"
 #include "src/transport/xqc_packet.h"
 
@@ -161,6 +162,7 @@ xqc_bbr_init(void *cong_ctl, xqc_sample_t *sampler, xqc_cc_params_t cc_params)
     bbr->extra_ack_win_len_in_startup = xqc_bbr2_extra_ack_win_rtt_in_startup;
     bbr->full_bandwidth_cnt = 0;
     bbr->full_bandwidth_reached = FALSE;
+
 
     if (cc_params.customize_on) {
         cc_params.init_cwnd *= XQC_BBR_MAX_DATAGRAMSIZE;
@@ -1014,6 +1016,31 @@ xqc_bbr_in_slow_start(void *cong)
     return bbr->mode == BBR_STARTUP;
 }
 
+static void
+xqc_bbr_set_cwnd_CS(void *cong, uint64_t cwnd)
+{
+    xqc_bbr_t *bbr = (xqc_bbr_t*)cong;
+    bbr->congestion_window = cwnd;
+}
+
+static void 
+xqc_bbr_set_pacing_rate_CS(void *cong, uint32_t pacing_rate)
+{
+    xqc_bbr_t *bbr = (xqc_bbr_t*)cong;
+    bbr->pacing_rate = pacing_rate;
+}
+
+static void
+xqc_bbr_print_status(void *cong, xqc_sample_t *sampler)
+{
+    xqc_bbr_t *bbr = (xqc_bbr_t*)cong;
+    xqc_send_ctl_t *send_ctl = sampler->send_ctl;
+    xqc_connection_t *conn = send_ctl->ctl_conn;
+    
+    const char *status[] = {"BBR_STARTUP", "BBR_DRAIN", "BBR_PROBE_BW", "BBR_PROBE_RTT"};
+    xqc_extra_log(conn->log, conn->CS_extra_log, "[CCA:BBR] [mode:%s]", status[bbr->mode]);
+}
+
 static xqc_bbr_info_interface_t xqc_bbr_info_cb = {
     .mode                 = xqc_bbr_info_mode,
     .min_rtt              = xqc_bbr_info_min_rtt,
@@ -1027,7 +1054,7 @@ static xqc_bbr_info_interface_t xqc_bbr_info_cb = {
     .cwnd_gain            = xqc_bbr_info_cwnd_gain,
 };
 
-const xqc_cong_ctrl_callback_t xqc_bbr_cb = {
+xqc_cong_ctrl_callback_t xqc_bbr_cb = {
     .xqc_cong_ctl_size                    = xqc_bbr_size,
     .xqc_cong_ctl_init_bbr                = xqc_bbr_init,
     .xqc_cong_ctl_on_ack_multiple_pkts    = xqc_bbr_on_ack,
@@ -1040,4 +1067,7 @@ const xqc_cong_ctrl_callback_t xqc_bbr_cb = {
     .xqc_cong_ctl_info_cb                 = &xqc_bbr_info_cb,
     .xqc_cong_ctl_in_recovery             = xqc_bbr_in_recovery,
     .xqc_cong_ctl_in_slow_start           = xqc_bbr_in_slow_start,
+    .xqc_cong_ctl_set_cwnd                = xqc_bbr_set_cwnd_CS,
+    .xqc_cong_ctl_set_pacing_rate         = xqc_bbr_set_pacing_rate_CS,
+    .xqc_cong_ctl_print_status            = xqc_bbr_print_status
 };

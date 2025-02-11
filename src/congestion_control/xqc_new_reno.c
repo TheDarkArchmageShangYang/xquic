@@ -5,6 +5,7 @@
 #include <xquic/xquic.h>
 #include "src/congestion_control/xqc_new_reno.h"
 #include "src/common/xqc_time.h"
+#include "src/common/xqc_extra_log.h"
 #include "src/transport/xqc_packet.h"
 
 /* https://tools.ietf.org/html/draft-ietf-quic-recovery-19#appendix-B */
@@ -126,7 +127,24 @@ xqc_reno_in_recovery(void *cong_ctl) {
     return reno->reno_recovery_start_time > 0;
 }
 
-const xqc_cong_ctrl_callback_t xqc_reno_cb = {
+static void
+xqc_reno_set_cwnd_CS(void *cong_ctl, uint64_t cwnd)
+{
+    xqc_new_reno_t *reno = (xqc_new_reno_t*)(cong_ctl);
+    reno->reno_congestion_window = cwnd;
+}
+
+static void
+xqc_reno_print_status(void *cong_ctl, xqc_sample_t *sampler)
+{
+    xqc_new_reno_t *reno = (xqc_new_reno_t*)(cong_ctl);
+    xqc_send_ctl_t *send_ctl = sampler->send_ctl;
+    xqc_connection_t *conn = send_ctl->ctl_conn;
+
+    xqc_extra_log(conn->log, conn->CS_extra_log, "[in_slow_start:%s]", xqc_reno_in_slow_start(cong_ctl) ? "yes" : "no");
+}
+
+xqc_cong_ctrl_callback_t xqc_reno_cb = {
     .xqc_cong_ctl_size              = xqc_reno_size,
     .xqc_cong_ctl_init              = xqc_reno_init,
     .xqc_cong_ctl_on_lost           = xqc_reno_on_lost,
@@ -136,4 +154,6 @@ const xqc_cong_ctrl_callback_t xqc_reno_cb = {
     .xqc_cong_ctl_in_slow_start     = xqc_reno_in_slow_start,
     .xqc_cong_ctl_restart_from_idle = xqc_reno_restart_from_idle,
     .xqc_cong_ctl_in_recovery       = xqc_reno_in_recovery,
+    .xqc_cong_ctl_set_cwnd          = xqc_reno_set_cwnd_CS,
+    .xqc_cong_ctl_print_status      = xqc_reno_print_status
 };

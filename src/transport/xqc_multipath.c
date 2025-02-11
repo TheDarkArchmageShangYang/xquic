@@ -201,6 +201,18 @@ xqc_path_init(xqc_path_ctx_t *path, xqc_connection_t *conn)
         xqc_set_path_state(path, XQC_PATH_STATE_VALIDATING);
     }
 
+    /* added by jndu for CCA switching */
+    xqc_send_ctl_t *send_ctl = path->path_send_ctl;
+    send_ctl->mp_index = 0;
+    if (conn->engine->eng_callback.get_mp_index_cb) {
+        send_ctl->mp_index = conn->engine->eng_callback.get_mp_index_cb(path->path_id);
+    }
+    send_ctl->ctl_switch_ctx = xqc_calloc(1, sizeof(xqc_switch_ctx_t));
+    ret = xqc_switch_ctx_init(send_ctl);
+    if (ret != XQC_OK) {
+        xqc_log(conn->log, XQC_LOG_ERROR, "|xqc_switch_ctx_init error|%d|", ret);
+        return ret;
+    }
     xqc_log(conn->engine->log, XQC_LOG_DEBUG, "|path:%ui|dcid:%s|scid:%s|state:%d|",
             path->path_id, xqc_dcid_str(&path->path_dcid), xqc_scid_str(&path->path_scid), path->path_state);
 
@@ -410,6 +422,7 @@ xqc_conn_create_path(xqc_engine_t *engine, const xqc_cid_t *scid, uint64_t *new_
     }
 
     path = xqc_conn_create_path_inner(conn, NULL, NULL);
+
     if (path == NULL) {
         xqc_log(conn->log, XQC_LOG_ERROR, "|xqc_path_create error|");
         return -XQC_EMP_CREATE_PATH;
@@ -422,7 +435,7 @@ xqc_conn_create_path(xqc_engine_t *engine, const xqc_cid_t *scid, uint64_t *new_
     }
 
     *new_path_id = path->path_id;
-
+    
     return XQC_OK;
 }
 

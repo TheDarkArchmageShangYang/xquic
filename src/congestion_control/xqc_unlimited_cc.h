@@ -8,6 +8,6 @@
 #include <xquic/xquic_typedef.h>
 #include <xquic/xquic.h>
 
-extern const xqc_cong_ctrl_callback_t xqc_unlimited_cc_cb;
+extern xqc_cong_ctrl_callback_t xqc_unlimited_cc_cb;
 
 #endif

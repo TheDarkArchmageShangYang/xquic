@@ -40,6 +40,7 @@ if(HAVE_CUNIT)
         ${UNIT_TEST_DIR}/xqc_retry_test.c
         ${UNIT_TEST_DIR}/xqc_datagram_test.c
         ${UNIT_TEST_DIR}/xqc_h3_ext_test.c
+        ${UNIT_TEST_DIR}/xqc_congestion_switch_test.c
     )
 
 
@@ -49,6 +50,7 @@ if(HAVE_CUNIT)
 
     target_include_directories(run_tests PRIVATE ${CUNIT_INCLUDE_DIRS})
     target_link_libraries(run_tests
+    "-L/home/qnwang/worknew/CS/xquic/third_party/libxml2/lib -lxml2 -lz -lm"
         xquic-static
         ${CUNIT_LIBRARIES}
         ${SSL_LIB_PATH}

@@ -18,6 +18,7 @@
 #   define XQC_LIKELY(cond) cond
 #endif
 
+typedef struct xqc_switch_ctx_s             xqc_switch_ctx_t;
 typedef struct xqc_stream_s                 xqc_stream_t;
 typedef struct xqc_connection_s             xqc_connection_t;
 typedef struct xqc_conn_settings_s          xqc_conn_settings_t;
@@ -51,6 +52,13 @@ typedef struct xqc_bbr_info_interface_s     xqc_bbr_info_interface_t;
 typedef struct xqc_path_ctx_s               xqc_path_ctx_t;
 typedef struct xqc_timer_manager_s          xqc_timer_manager_t;
 typedef struct xqc_h3_ext_bytestream_s      xqc_h3_ext_bytestream_t;
+typedef struct xqc_CCA_info_container_s     xqc_CCA_info_container_t;
+typedef struct xqc_ip_CCA_info_s            xqc_ip_CCA_info_t;
+typedef struct xqc_stream_CCA_info_s        xqc_stream_CCA_info_t;
+typedef struct xqc_extra_log_s              xqc_extra_log_t;
+// added by qnwang for AR
+typedef struct xqc_active_retrans_s         xqc_active_retrans_t;
+typedef struct xqc_redundant_pkt_s         xqc_redundant_pkt_t;
 
 typedef uint64_t        xqc_msec_t; /* store millisecond values */
 typedef uint64_t        xqc_usec_t; /* store microsecond values */
@@ -93,6 +101,22 @@ typedef enum xqc_log_level_s {
     XQC_LOG_INFO,
     XQC_LOG_DEBUG,
 } xqc_log_level_t;
+
+typedef enum xqc_CCA_info_container_type_s {
+    XQC_CCA_INFO_HASH,
+    XQC_CCA_INFO_TRIE,
+    XQC_CCA_INFO_TYPE_NUM
+} xqc_CCA_info_container_type_t;
+
+typedef enum xqc_CCA_info_sample_type_s {
+    XQC_CCA_INFO_SAMPLE_THROUGHPUT,
+    XQC_CCA_INFO_SAMPLE_MAX_THROUGHPUT,
+    XQC_CCA_INFO_SAMPLE_LOSS_RATE,
+    XQC_CCA_INFO_SAMPLE_MAX_DELIVERY_RATE,
+    XQC_CCA_INFO_SAMPLE_DELIVERY_RATE,
+    XQC_CCA_INFO_SAMPLE_LATEST_RTT,
+    XQC_CCA_INFO_SAMPLE_MIN_RTT,
+} xqc_CCA_info_sample_type_t;
 
 #define XQC_BBR_RTTVAR_COMPENSATION_ENABLED 0
 typedef enum {

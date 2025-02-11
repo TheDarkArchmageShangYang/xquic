@@ -61,7 +61,7 @@ xqc_unlimited_cc_in_recovery(void *cong_ctl)
     return 0;
 }
 
-const xqc_cong_ctrl_callback_t xqc_unlimited_cc_cb = {
+xqc_cong_ctrl_callback_t xqc_unlimited_cc_cb = {
     .xqc_cong_ctl_size              = xqc_unlimited_cc_size,
     .xqc_cong_ctl_init              = xqc_unlimited_cc_init,
     .xqc_cong_ctl_on_lost           = xqc_unlimited_cc_on_lost,

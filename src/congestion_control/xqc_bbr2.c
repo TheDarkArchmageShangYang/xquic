@@ -9,6 +9,7 @@
 #include "src/congestion_control/xqc_sample.h"
 #include "src/common/xqc_time.h"
 #include "src/common/xqc_config.h"
+#include "src/common/xqc_extra_log.h"
 #include "src/transport/xqc_send_ctl.h"
 #include "src/transport/xqc_packet.h"
 
@@ -216,6 +217,7 @@ xqc_bbr2_init(void *cong_ctl, xqc_sample_t *sampler, xqc_cc_params_t cc_params)
     bbr2->bw_probe_samples = 0;
     bbr2->prev_probe_too_high = 0;
     bbr2->exit_startup_on_loss = (xqc_bbr2_full_loss_cnt > 0);
+
     xqc_bbr2_reset_congestion_signals(cong_ctl);
 
     xqc_bbr2_enter_startup(bbr2);
@@ -1613,7 +1615,32 @@ xqc_bbr2_in_slow_start(void *cong)
     return bbr2->mode == BBR2_STARTUP;
 }
 
-const xqc_cong_ctrl_callback_t xqc_bbr2_cb = {
+static void
+xqc_bbr2_set_cwnd_CS(void *cong, uint64_t cwnd)
+{
+    xqc_bbr2_t *bbr2 = (xqc_bbr2_t*)cong;
+    bbr2->congestion_window = cwnd;
+}
+
+static void
+xqc_bbr2_set_pacing_rate_CS(void *cong, uint32_t pacing_rate)
+{
+    xqc_bbr2_t *bbr2 = (xqc_bbr2_t*)cong;
+    bbr2->pacing_rate = pacing_rate;
+}
+
+static void 
+xqc_bbr2_print_status(void *cong, xqc_sample_t *sampler)
+{
+    xqc_bbr2_t *bbr2 = (xqc_bbr2_t*)cong;
+    xqc_send_ctl_t *send_ctl = sampler->send_ctl;
+    xqc_connection_t *conn = send_ctl->ctl_conn;
+
+    const char *status[] = {"BBR2_STARTUP", "BBR2_DRAIN", "BBR2_PROBE_BW", "BBR2_PROBE_RTT"};
+    xqc_extra_log(conn->log, conn->CS_extra_log, "[CCA:BBR2] [mode:%s]", status[bbr2->mode]);
+}
+
+xqc_cong_ctrl_callback_t xqc_bbr2_cb = {
     .xqc_cong_ctl_size                   = xqc_bbr2_size,
     .xqc_cong_ctl_init_bbr               = xqc_bbr2_init,
     .xqc_cong_ctl_on_ack_multiple_pkts   = xqc_bbr2_on_ack,
@@ -1626,4 +1653,7 @@ const xqc_cong_ctrl_callback_t xqc_bbr2_cb = {
     .xqc_cong_ctl_info_cb                = &xqc_bbr2_info_cb,
     .xqc_cong_ctl_in_recovery            = xqc_bbr2_in_recovery,
     .xqc_cong_ctl_in_slow_start          = xqc_bbr2_in_slow_start,
+    .xqc_cong_ctl_set_cwnd               = xqc_bbr2_set_cwnd_CS,
+    .xqc_cong_ctl_set_pacing_rate        = xqc_bbr2_set_pacing_rate_CS,
+    .xqc_cong_ctl_print_status           = xqc_bbr2_print_status
 };

@@ -143,6 +143,7 @@ typedef struct xqc_bbr_s {
     uint8_t                rttvar_compensation_on;
 #endif
 } xqc_bbr_t;
-extern const xqc_cong_ctrl_callback_t xqc_bbr_cb;
+/* modified by jndu */
+extern xqc_cong_ctrl_callback_t xqc_bbr_cb;
 
 #endif

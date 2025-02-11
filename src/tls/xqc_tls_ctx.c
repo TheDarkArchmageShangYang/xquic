@@ -110,7 +110,7 @@ xqc_create_server_ssl_ctx(xqc_tls_ctx_t *ctx)
     /* set private key file */
     if (SSL_CTX_use_PrivateKey_file(ssl_ctx, ctx->cfg.private_key_file, SSL_FILETYPE_PEM)
         != XQC_SSL_SUCCESS)
-    {
+    {   
         xqc_log(ctx->log, XQC_LOG_ERROR, "|SSL_CTX_use_PrivateKey_file| error info:%s|",
                 ERR_error_string(ERR_get_error(), NULL));
         goto fail;

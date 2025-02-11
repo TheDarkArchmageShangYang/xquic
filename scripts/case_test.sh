@@ -1398,7 +1398,7 @@ killall test_server
 ./test_server -l d -e -M > /dev/null &
 sleep 1
 
-
+# multipath test added by jndu
 clear_log
 echo -e "MPNS enable multipath negotiate ...\c"
 sudo ./test_client -s 1024000 -l d -t 1 -M -i lo > stdlog

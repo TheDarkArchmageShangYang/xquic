@@ -12,7 +12,9 @@
 #include "src/tls/xqc_tls.h"
 #include "src/common/xqc_list.h"
 
+
 #define XQC_RESET_CNT_ARRAY_LEN 16384
+#define XQC_MAX_CONN 20
 
 
 typedef enum {
@@ -68,6 +70,13 @@ typedef struct xqc_engine_s {
     /* list of xqc_alpn_registration_t */
     xqc_list_head_t                 alpn_reg_list;
 
+    /* hashtable for CCA ip level prediction, key: IP+port, value: pointer to hashtable in conn. added by jndu */
+    xqc_CCA_info_container_t        *container;
+    
+    /* self defined log for CS */
+    xqc_extra_log_t                 *CS_extra_log;
+    /* qnwang defined log for AR */
+    xqc_extra_log_t                 *AR_extra_log;
 } xqc_engine_t;
 
 

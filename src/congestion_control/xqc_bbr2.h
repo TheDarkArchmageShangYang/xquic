@@ -215,6 +215,6 @@ typedef struct xqc_bbr2_context_s {
     uint32_t target_cwnd;
 } xqc_bbr2_context_t;
 
-extern const xqc_cong_ctrl_callback_t xqc_bbr2_cb;
+extern xqc_cong_ctrl_callback_t xqc_bbr2_cb;
 
 #endif

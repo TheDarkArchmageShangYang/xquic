@@ -6,6 +6,7 @@
 
 #include "src/congestion_control/xqc_cubic.h"
 #include "src/common/xqc_config.h"
+#include "src/common/xqc_extra_log.h"
 #include <math.h>
 
 #define XQC_CUBIC_FAST_CONVERGENCE  1
@@ -130,6 +131,7 @@ xqc_cubic_init(void *cong_ctl, xqc_send_ctl_t *ctl_ctx, xqc_cc_params_t cc_param
     cubic->congestion_recovery_start_time = 0;
     cubic->init_cwnd = XQC_CUBIC_INIT_WIN;
     cubic->min_cwnd = XQC_CUBIC_MIN_WIN;
+    cubic->send_ctl = ctl_ctx;
 
     if (cc_params.customize_on) {
         cc_params.min_cwnd *= XQC_CUBIC_MSS;
@@ -246,7 +248,25 @@ xqc_cubic_in_recovery(void *cong_ctl)
     return 0;
 }
 
-const xqc_cong_ctrl_callback_t xqc_cubic_cb = {
+static void
+xqc_cubic_set_cwnd_CS(void *cong, uint64_t cwnd)
+{
+    xqc_cubic_t *cubic = (xqc_cubic_t *)(cong);
+    cubic->cwnd = cwnd;
+}
+
+static void
+xqc_cubic_print_status(void *cong, xqc_sample_t *sampler)
+{
+    xqc_cubic_t *cubic = (xqc_cubic_t *)(cong);
+    xqc_send_ctl_t *send_ctl = sampler->send_ctl;
+    xqc_connection_t *conn = send_ctl->ctl_conn;
+
+    xqc_extra_log(conn->log, conn->CS_extra_log, "[in_slow_start:%s]", xqc_cubic_in_slow_start(cong) ? "yes" : "no");
+
+}
+
+xqc_cong_ctrl_callback_t xqc_cubic_cb = {
     .xqc_cong_ctl_size              = xqc_cubic_size,
     .xqc_cong_ctl_init              = xqc_cubic_init,
     .xqc_cong_ctl_on_lost           = xqc_cubic_on_lost,
@@ -256,4 +276,6 @@ const xqc_cong_ctrl_callback_t xqc_cubic_cb = {
     .xqc_cong_ctl_in_slow_start     = xqc_cubic_in_slow_start,
     .xqc_cong_ctl_restart_from_idle = xqc_cubic_restart_from_idle,
     .xqc_cong_ctl_in_recovery       = xqc_cubic_in_recovery,
+    .xqc_cong_ctl_set_cwnd          = xqc_cubic_set_cwnd_CS,
+    .xqc_cong_ctl_print_status      = xqc_cubic_print_status
 };
