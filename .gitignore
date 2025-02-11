@@ -3,5 +3,5 @@ bss/
 cmake/
 cmake-build-debug/
 *.swp
-third_party/
+# third_party/
 /.vscode
