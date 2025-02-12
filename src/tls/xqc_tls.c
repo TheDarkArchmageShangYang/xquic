@@ -366,7 +366,7 @@ fail:
 void
 xqc_tls_process_trans_param(xqc_tls_t *tls)
 {
-    const uint8_t *peer_tp;
+    const uint8_t *peer_tp = NULL;
     size_t tp_len = 0;
 
     if (tls->flag & XQC_TLS_FLAG_TRANSPORT_PARAM_RCVD) {
@@ -382,6 +382,7 @@ xqc_tls_process_trans_param(xqc_tls_t *tls)
 
     /* callback to Transport layer */
     if (tls->cbs->tp_cb) {
+        if (peer_tp)
         tls->cbs->tp_cb(peer_tp, tp_len, tls->user_data);
     }
 

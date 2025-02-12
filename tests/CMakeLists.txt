@@ -50,7 +50,7 @@ if(HAVE_CUNIT)
 
     target_include_directories(run_tests PRIVATE ${CUNIT_INCLUDE_DIRS})
     target_link_libraries(run_tests
-    "-L/home/qnwang/worknew/CS/xquic/third_party/libxml2/lib -lxml2 -lz -lm"
+    "-L/home/fzchen/xquic/xquic-1.6.0/third_party/libxml2/lib -lxml2 -L/home/fzchen/zlib/lib -lz -lm"
         xquic-static
         ${CUNIT_LIBRARIES}
         ${SSL_LIB_PATH}

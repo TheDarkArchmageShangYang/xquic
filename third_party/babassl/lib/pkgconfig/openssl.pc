@@ -1,4 +1,4 @@
-prefix=/home/qnwang/worknew/CS/xquic/third_party/babassl
+prefix=/home/fzchen/xquic/xquic-1.6.0/third_party/babassl
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

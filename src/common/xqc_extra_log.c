@@ -49,5 +49,5 @@ void xqc_extra_log_implement(xqc_log_t *ori_log, xqc_extra_log_t *log, const cha
   }
 
   // print
-  write(fd, buf, p - buf);
+  ssize_t ret = write(fd, buf, p - buf);
 }

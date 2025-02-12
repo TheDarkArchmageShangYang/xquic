@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/home/qnwang/worknew/CS/xquic/third_party/libxml2/lib'
+libdir='/home/fzchen/xquic/xquic-1.6.0/third_party/libxml2/lib'

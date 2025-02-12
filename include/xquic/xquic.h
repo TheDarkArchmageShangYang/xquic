@@ -68,10 +68,10 @@ extern "C"
 #define XQC_DGRAM_RETX_ASKED_BY_APP 1
 
 // self defined extra log file path changed by qnwang
-#define XQC_CLIENT_CS_EXTRA_LOG_FILE "/home/qnwang/worknew/AR/CS.clog"
-#define XQC_CLIENT_AR_EXTRA_LOG_FILE "/home/qnwang/worknew/AR/AR.clog"
-#define XQC_SERVER_CS_EXTRA_LOG_FILE "/home/qnwang/worknew/AR/CS.slog"
-#define XQC_SERVER_AR_EXTRA_LOG_FILE "/home/qnwang/worknew/AR/AR.slog"
+#define XQC_CLIENT_CS_EXTRA_LOG_FILE "/home/fzchen/xquic/CS.clog"
+#define XQC_CLIENT_AR_EXTRA_LOG_FILE "/home/fzchen/xquic/AR.clog"
+#define XQC_SERVER_CS_EXTRA_LOG_FILE "/home/fzchen/xquic/CS.slog"
+#define XQC_SERVER_AR_EXTRA_LOG_FILE "/home/fzchen/xquic/AR.slog"
 
     /**
      * @brief added by jndu for CCA switching. read file of CCA infos

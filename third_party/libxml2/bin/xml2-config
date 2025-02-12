@@ -1,6 +1,6 @@
 #! /bin/sh
 
-prefix=/home/qnwang/worknew/CS/xquic/third_party/libxml2
+prefix=/home/fzchen/xquic/xquic-1.6.0/third_party/libxml2
 exec_prefix=${prefix}
 includedir=${prefix}/include
 libdir=${exec_prefix}/lib

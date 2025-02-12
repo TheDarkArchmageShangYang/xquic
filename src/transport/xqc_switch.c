@@ -173,7 +173,7 @@ void xqc_switch_CCA_implement(xqc_send_ctl_t *send_ctl)
     } else {
       if (switch_ctx->ctx_future_state == XQC_CCA_NUM) {
         switch_ctx->ctx_future_state = future_state;
-        uint64_t pacing_rate, cwnd;
+        uint64_t pacing_rate = 0, cwnd = 0;
         xqc_cong_ctrl_callback_t *cong_cb = send_ctl->ctl_cong_callback;
         void *cong = send_ctl->ctl_cong;
         if (cong_cb->xqc_cong_ctl_get_cwnd) {

@@ -13,6 +13,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # SSL lib type, xquic support babassl and boringssl interfaces
+set(SSL_TYPE "babassl")
+set(SSL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/third_party/babassl)
 if(NOT SSL_TYPE)
     set(SSL_TYPE "boringssl")
 endif()
@@ -56,7 +58,7 @@ endif()
 # libxml2 lib dependency
 set(XML_PATH ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libxml2)
 
-set(XML_LIB_PATH ${XML_PATH}/lib/libxml2.a)
+set(XML_LIB_PATH ${XML_PATH}/lib/libxml2.la)
 
 
 
@@ -325,7 +327,7 @@ else()
         xquic
         "-ldl -Wl,--whole-archive -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/scripts/xquic.lds"
         ${SSL_LIB_PATH}
-            "-L/home/qnwang/worknew/AR/xquic/third_party/libxml2/lib -lxml2 -lz -lm"
+            "-L${CMAKE_CURRENT_SOURCE_DIR}/third_party/libxml2/lib -lxml2 -L${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib/lib -lz -lm"
         "-Wl,--no-whole-archive"
         -lpthread
     )
