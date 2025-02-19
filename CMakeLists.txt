@@ -327,7 +327,7 @@ else()
         xquic
         "-ldl -Wl,--whole-archive -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/scripts/xquic.lds"
         ${SSL_LIB_PATH}
-            "-L${CMAKE_CURRENT_SOURCE_DIR}/third_party/libxml2/lib -lxml2 -L${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib/lib -lz -lm"
+            "-L${CMAKE_CURRENT_SOURCE_DIR}/third_party/libxml2/lib -lxml2 -lz -lm"
         "-Wl,--no-whole-archive"
         -lpthread
     )
